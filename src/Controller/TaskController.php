@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Repository\TaskRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -10,28 +11,21 @@ use Symfony\Component\Routing\Attribute\Route;
 class TaskController extends AbstractController
 {
     #[Route('/task', name: 'task.index')]
-    public function index(Request $request): Response
+    public function index(Request $request, TaskRepository $repository): Response
     {
-        $todos = array();
-        for($i=0; $i < 10; $i++) {
-            array_push($todos, [
-                'id' => $i,
-                'title' => 'Tache '.$i+1,
-                'slug' => 'tache'
-            ]);
-        }
+        $tasks = $repository->findAll();
         return $this->render('task/index.html.twig', [
-            'tasks' => $todos
+            'tasks' => $tasks
         ]);
     }
 
     #[Route('/task/{slug}-{id}', name: 'task.show', requirements: ['id' => '\d+', 'slug' => '[a-z0-9-]+'])]
-    public function show(Request $request, string $slug, int $id): Response
+    public function show(Request $request, string $slug, int $id, TaskRepository $repository): Response
     {
+        $task = $repository->find($id);
+
         return $this->render('task/show.html.twig', [
-            'id' => $id,
-            'slug' => $slug,
-            'description' => 'Voir ici la description de la tache '.$id
+            'task' => $task,
         ]);
     }
 }
