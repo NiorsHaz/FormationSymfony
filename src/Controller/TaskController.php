@@ -24,6 +24,10 @@ class TaskController extends AbstractController
     {
         $task = $repository->find($id);
 
+        if($task->getSlug() !== $slug) {
+            return $this->redirectToRoute('task.show', ['slug' => $task->getSlug(), 'id' => $task->getId()]);
+        }
+        
         return $this->render('task/show.html.twig', [
             'task' => $task,
         ]);
