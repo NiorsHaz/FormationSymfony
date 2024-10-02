@@ -14,9 +14,25 @@
         {% endblock %}
     </head>
     <body>
-        <nav class="navbar bg-body-tertiary">
+        <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
-                <span class="navbar-brand mb-0 h1">Mon projet</span>
+                <a class="navbar-brand" href="{{ url('home') }}">Mon projet</span>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url('home') }}">Accueil</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url('todo.index') }}">Liste des taches</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </nav>
         {% block body %}{% endblock %}
