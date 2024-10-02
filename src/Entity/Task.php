@@ -22,6 +22,9 @@ class Task
     #[ORM\Column(length: 1000, nullable: true)]
     private ?string $description = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $estimates = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -66,6 +69,18 @@ class Task
     public function setDescription(?string $description): static
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function getEstimates(): ?int
+    {
+        return $this->estimates;
+    }
+
+    public function setEstimates(?int $estimates): static
+    {
+        $this->estimates = $estimates;
 
         return $this;
     }

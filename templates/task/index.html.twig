@@ -7,7 +7,7 @@
 
     <ul class="list-group">
         {% for task in tasks %}
-            <a class="list-group-item list-group-item-action" href="{{ url('task.show', {id: task.id, slug: task.slug}) }}">{{task.title}}</a>
+            <a class="list-group-item list-group-item-action" href="{{ url('task.show', {id: task.id, slug: task.slug}) }}">{{task.title}} (Estimation : {{task.estimates}})</a>
         {% endfor %}
     </ul>
 </div>

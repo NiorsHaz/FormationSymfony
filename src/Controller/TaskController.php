@@ -13,7 +13,7 @@ class TaskController extends AbstractController
     #[Route('/task', name: 'task.index')]
     public function index(Request $request, TaskRepository $repository): Response
     {
-        $tasks = $repository->findAll();
+        $tasks = $repository->findWithLowerEstimatesThan(4);
         return $this->render('task/index.html.twig', [
             'tasks' => $tasks
         ]);
