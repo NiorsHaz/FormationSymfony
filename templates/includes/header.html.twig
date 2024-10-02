@@ -10,10 +10,10 @@
                     <a></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url('home') }}">Accueil</a>
+                    <a class="nav-link {{ app.current_route == 'home' ? 'active' : '' }}" href="{{ url('home') }}">Accueil</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url('todo.index') }}">Liste des taches</a>
+                    <a class="nav-link {{ app.current_route starts with 'todo' ? 'active' : '' }}" href="{{ url('todo.index') }}">Liste des taches</a>
                 </li>
             </ul>
         </div>
