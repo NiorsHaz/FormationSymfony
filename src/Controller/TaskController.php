@@ -7,10 +7,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-class TodoController extends AbstractController
+class TaskController extends AbstractController
 {
-
-    #[Route('/todo', name: 'todo.index')]
+    #[Route('/task', name: 'task.index')]
     public function index(Request $request): Response
     {
         $todos = array();
@@ -21,15 +20,15 @@ class TodoController extends AbstractController
                 'slug' => 'tache'
             ]);
         }
-        return $this->render('todo/index.html.twig', [
+        return $this->render('task/index.html.twig', [
             'tasks' => $todos
         ]);
     }
 
-    #[Route('/todo/{slug}-{id}', name: 'todo.show', requirements: ['id' => '\d+', 'slug' => '[a-z0-9-]+'])]
+    #[Route('/task/{slug}-{id}', name: 'task.show', requirements: ['id' => '\d+', 'slug' => '[a-z0-9-]+'])]
     public function show(Request $request, string $slug, int $id): Response
     {
-        return $this->render('todo/show.html.twig', [
+        return $this->render('task/show.html.twig', [
             'id' => $id,
             'slug' => $slug,
             'description' => 'Voir ici la description de la tache '.$id
