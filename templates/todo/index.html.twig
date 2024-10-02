@@ -7,7 +7,9 @@
 
     <ul class="list-group">
         {% for task in tasks %}
-            <li class="list-group-item">{{task}}</li>
+            <li class="list-group-item">
+                <a href="{{ url('todo.show', {id:task.id, slug:task.slug}) }}">{{task.title}}</a>
+            </li>
         {% endfor %}
     </ul>
 </div>

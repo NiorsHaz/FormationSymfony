@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+
+{% block title "Taches : " ~ id %}
+
+{% block body %}
+<div class="container">
+  <h1>{{ slug|upper }}</h1>
+  <p>{{ description }}</p>
+</div>
+{% endblock %}
