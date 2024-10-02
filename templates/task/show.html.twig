@@ -1,11 +1,10 @@
 {% extends 'base.html.twig' %}
 
-{% block title "Taches : " ~ id %}
+{% block title "Taches : " ~ task.id %}
 
 {% block body %}
 <div class="container">
-  <h1>{{ slug|upper }}</h1>
-  <p>{{ description }}</p>
-  <img src="{{ asset('images/home.jpg') }}" class="card-img-top" alt="Image d'accueil">
+  <h1>{{ task.title }}</h1>
+  <p>{{ task.description }}</p>
 </div>
 {% endblock %}
