@@ -31,6 +31,14 @@ class TaskRepository extends ServiceEntityRepository
         ;
     }
 
+    public function findTotalEstimates() : int {
+        $total = $this->createQueryBuilder('t')
+        ->select('SUM(t.estimates)')
+        ->getQuery()
+        ->getSingleScalarResult();
+        return $total;
+    }
+
 //    public function findOneBySomeField($value): ?Task
 //    {
 //        return $this->createQueryBuilder('t')
