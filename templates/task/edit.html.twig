@@ -5,7 +5,7 @@
 {% block body %}
 <div class="container">
   <h1>{{ task.title }}</h1>
-  <p>{{ task.description }}</p>
-  <a href="{{ path('task.edit', {'id': task.id}) }}" class="btn btn-primary">Modifier</a>
+
+  {{ form(createForm) }}
 </div>
 {% endblock %}

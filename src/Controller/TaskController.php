@@ -2,7 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Task;
+use App\Form\TaskType;
 use App\Repository\TaskRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -10,7 +13,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class TaskController extends AbstractController
 {
-    #[Route('/task', name: 'task.index')]
+    #[Route('/tasks', name: 'task.index')]
     public function index(Request $request, TaskRepository $repository): Response
     {
         $tasks = $repository->findAll(4);
@@ -22,7 +25,7 @@ class TaskController extends AbstractController
         ]);
     }
 
-    #[Route('/task/{slug}-{id}', name: 'task.show', requirements: ['id' => '\d+', 'slug' => '[a-z0-9-]+'])]
+    #[Route('/tasks/{slug}-{id}', name: 'task.show', requirements: ['id' => '\d+', 'slug' => '[a-z0-9-]+'])]
     public function show(Request $request, string $slug, int $id, TaskRepository $repository): Response
     {
         $task = $repository->find($id);
@@ -33,6 +36,24 @@ class TaskController extends AbstractController
         
         return $this->render('task/show.html.twig', [
             'task' => $task,
+        ]);
+    }
+
+    #[Route('/tasks/{id}/edit', name: 'task.edit')]
+    public function edit(Task $task, Request $request, EntityManagerInterface $em): Response
+    {
+        $form = $this->createForm(TaskType::class, $task);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->flush();
+
+            return $this->redirectToRoute('task.index');
+        }
+
+        return $this->render('task/edit.html.twig', [
+            'task' => $task,
+            'createForm' => $form,
         ]);
     }
 }
