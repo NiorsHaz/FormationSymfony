@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 class TaskController extends AbstractController
 {
@@ -56,4 +57,28 @@ class TaskController extends AbstractController
             'form' => $form,
         ]);
     }
+
+    #[Route('/tasks/create', name: 'task.create')]
+    public function create(Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
+    {
+        $task = new Task();
+        $form = $this->createForm(TaskType::class, $task);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Slugify title
+            $slug = $slugger->slug($task->getTitle());
+            $task->setSlug($slug);
+
+            $em->persist($task);
+            $em->flush();
+            $this->addFlash('success', 'Les informations ont bien été enregistrées');
+            return $this->redirectToRoute('task.index');
+        }
+
+        return $this->render('task/create.html.twig', [
+            'form' => $form,
+        ]);
+    }
+    
 }
