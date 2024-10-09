@@ -69,17 +69,13 @@ class TaskController extends AbstractController
     }
 
     #[Route('/tasks/create', name: 'task.create')]
-    public function create(Request $request, EntityManagerInterface $em, SluggerInterface $slugger): Response
+    public function create(Request $request, EntityManagerInterface $em): Response
     {
         $task = new Task();
         $form = $this->createForm(TaskType::class, $task);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Slugify title
-            $slug = $slugger->slug($task->getTitle());
-            $task->setSlug($slug);
-
             $em->persist($task);
             $em->flush();
             $this->addFlash('success', 'Les informations ont bien été enregistrées');

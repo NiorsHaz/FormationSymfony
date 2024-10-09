@@ -3,9 +3,13 @@
 {% block title "Taches : " ~ task.id %}
 
 {% block body %}
-<div class="container">
+<div class="container">  
   <h1>{{ task.title }}</h1>
-  <p>{{ task.description }}</p>
+  <p>Description: {{ task.description }}</p>
+  <p>Estimation : {{ task.estimates }} heures</p>
+  <p>Date de création : {{ task.createdAt ? task.createdAt|date('Y-m-d H:i:s') : 'Non définie' }}</p>
+  <p>Dernière mise à jour : {{ task.updatedAt ? task.updatedAt|date('Y-m-d H:i:s') : 'Non définie' }}</p>
+
   <a href="{{ path('task.edit', {'id': task.id}) }}" class="btn btn-primary">Modifier</a>
   <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
     Supprimer
