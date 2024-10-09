@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\TaskRepository;
+use App\Validator\BanWord;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -18,6 +19,7 @@ class Task
 
     #[ORM\Column(length: 255)]
     #[Assert\Length(min: 10, minMessage: 'Minimum 10 caractères')]
+    #[BanWord()]
     private ?string $title = null;
 
     #[ORM\Column(length: 255)]
