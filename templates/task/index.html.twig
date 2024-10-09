@@ -9,7 +9,7 @@
         <a href="{{ path('task.create') }}" class="btn btn-primary">Créer une tache</a>
         <p>Total estimation : {{ totalEstimates }}</p>
     </div>
-    
+
     <form method="get" class="mb-4">
         <div class="row">
             {# Barre de recherche par titre #}
@@ -34,7 +34,6 @@
         </div>
     </form>
 
-    <p>Total estimation : {{ totalEstimates }}</p>
     <ul class="list-group">
         {% for task in tasks %}
             <a class="list-group-item list-group-item-action" href="{{ url('task.show', {id: task.id, slug: task.slug}) }}">{{task.title}} (Estimation : {{task.estimates}})</a>
