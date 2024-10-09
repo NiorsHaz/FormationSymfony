@@ -16,27 +16,38 @@ class TaskRepository extends ServiceEntityRepository
         parent::__construct($registry, Task::class);
     }
 
-//    /**
-//     * @return Task[] Returns an array of Task objects
-//     */
-    public function findWithLowerEstimatesThan($estimates): array
-    {
-        return $this->createQueryBuilder('t')
-            ->andWhere('t.estimates <= :estimates')
-            ->setParameter('estimates', $estimates)
-            ->orderBy('t.estimates', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-
     public function findTotalEstimates() : int {
         $total = $this->createQueryBuilder('t')
-        ->select('SUM(t.estimates)')
-        ->getQuery()
-        ->getSingleScalarResult();
+            ->select('SUM(t.estimates)')
+            ->getQuery()
+            ->getSingleScalarResult();
         return $total;
+    }
+    
+    /**
+     * Retourne un tableau de tâches filtrées par titre et estimation.
+     * 
+     * @param string $title Le titre à rechercher (optionnel)
+     * @param int $minEstimate La valeur minimale pour estimates
+     * @param int $maxEstimate La valeur maximale pour estimates
+     * @return Task[] Un tableau d'objets Task
+     */
+    public function findByFilters(string $title = '', int $minEstimate = 0, int $maxEstimate = 10000) : array
+    {
+        $qb = $this->createQueryBuilder('t');
+
+        // Rechercher par titre (si renseigné)
+        if ($title) {
+            $qb->andWhere('t.title LIKE :title')
+               ->setParameter('title', '%' . $title . '%');
+        }
+
+        // Filtrer par estimates (min/max)
+        $qb->andWhere('t.estimates BETWEEN :min AND :max')
+           ->setParameter('min', $minEstimate)
+           ->setParameter('max', $maxEstimate);
+
+        return $qb->getQuery()->getResult();
     }
 
 //    public function findOneBySomeField($value): ?Task
