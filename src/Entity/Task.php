@@ -41,6 +41,9 @@ class Task
     #[ORM\Column]
     private ?\DateTimeImmutable $updatedAt = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $attachments = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -121,6 +124,18 @@ class Task
     public function setUpdatedAt(\DateTimeImmutable $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getAttachments(): ?string
+    {
+        return $this->attachments;
+    }
+
+    public function setAttachments(string $attachments): static
+    {
+        $this->attachments = $attachments;
 
         return $this;
     }
