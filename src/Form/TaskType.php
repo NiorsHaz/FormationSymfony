@@ -7,6 +7,7 @@ use DateTimeImmutable;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Event\PostSubmitEvent;
 use Symfony\Component\Form\Event\PreSubmitEvent;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -28,6 +29,9 @@ class TaskType extends AbstractType
             ->add('description')
             ->add('estimates', TextType::class, [
                 'label' => 'Estimation'
+            ])
+            ->add('dueDate', DateTimeType::class, [
+                'label' => 'Date d\'échéance'
             ])
             ->add('save', SubmitType::class, [
                 'label' => 'Enregistrer'
