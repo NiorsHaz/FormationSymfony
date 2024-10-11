@@ -7,9 +7,11 @@ use App\Validator\BanWord;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Validator\MaxEstimates;
 
 #[ORM\Entity(repositoryClass: TaskRepository::class)]
 #[UniqueEntity(fields: ['slug'], message: 'Ce slug est déjà utilisé.')]
+#[MaxEstimates()]
 class Task
 {
     #[ORM\Id]
@@ -41,8 +43,8 @@ class Task
     #[ORM\Column]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $attachments = null;
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $dueDate = null;
 
     public function getId(): ?int
     {
@@ -128,14 +130,14 @@ class Task
         return $this;
     }
 
-    public function getAttachments(): ?string
+    public function getDueDate(): ?\DateTimeImmutable
     {
-        return $this->attachments;
+        return $this->dueDate;
     }
 
-    public function setAttachments(string $attachments): static
+    public function setDueDate(?\DateTimeImmutable $dueDate): static
     {
-        $this->attachments = $attachments;
+        $this->dueDate = $dueDate;
 
         return $this;
     }
