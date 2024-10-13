@@ -2,7 +2,7 @@
 
 namespace App\Service;
 
-use App\Entity\DeletableEntity;
+use App\Entity\DeletableEntityInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
 class DeleteService
@@ -17,7 +17,7 @@ class DeleteService
     /**
      * Effectue une suppression logique (soft delete)
      */
-    public function softDelete(DeletableEntity $entity): void
+    public function softDelete(DeletableEntityInterface $entity): void
     {
         $entity->setDeletedAt(new \DateTimeImmutable());
         $this->entityManager->persist($entity);
@@ -27,7 +27,7 @@ class DeleteService
     /**
      * Effectue une suppression définitive (hard delete)
      */
-    public function hardDelete(DeletableEntity $entity): void
+    public function hardDelete(DeletableEntityInterface $entity): void
     {
         $this->entityManager->remove($entity);
         $this->entityManager->flush();
