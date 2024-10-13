@@ -7,17 +7,16 @@
   <h1>{{ task.title }}</h1>
   <p>Description: {{ task.description }}</p>
   <p>Estimation : {{ task.estimates }} heures</p>
+  <p>Date d'échéance : {{ task.dueDate ? task.dueDate|date('Y-m-d H:i:s') : 'Non définie' }}</p>
   <p>Date de création : {{ task.createdAt ? task.createdAt|date('Y-m-d H:i:s') : 'Non définie' }}</p>
   <p>Dernière mise à jour : {{ task.updatedAt ? task.updatedAt|date('Y-m-d H:i:s') : 'Non définie' }}</p>
   
-  {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_USER')  %}
+  {% if task.deletedAt == null %}
     <a href="{{ path('task.edit', {'id': task.id}) }}" class="btn btn-primary">Modifier</a>
     <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
       Supprimer
     </button>
-  {% endif %}
-
-  {% if is_granted('ROLE_ADMIN') %}
+  {% else if is_granted('ROLE_ADMIN') %}
     <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
       Supprimer définitivement
     </button>
