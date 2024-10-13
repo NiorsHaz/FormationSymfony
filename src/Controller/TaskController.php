@@ -5,8 +5,10 @@ namespace App\Controller;
 use App\Entity\Task;
 use App\Form\TaskType;
 use App\Repository\TaskRepository;
+use App\Service\DeleteService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\AccessDeniedException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -23,8 +25,8 @@ class TaskController extends AbstractController
         $maxEstimate = $request->query->get('max_estimate', 10000); // Limite par défaut
 
         // Appeler la méthode du repository pour filtrer les tâches
-        $tasks = $repository->findByFilters($searchTitle, $minEstimate, $maxEstimate);
-        $totalEstimates = $repository->findTotalEstimates();
+        $tasks = $repository->findByFilters($this->isGranted('ROLE_ADMIN'), $searchTitle, $minEstimate, $maxEstimate);
+        $totalEstimates = $repository->findTotalEstimates($this->isGranted('ROLE_ADMIN'), $searchTitle, $minEstimate, $maxEstimate);
 
         return $this->render('task/index.html.twig', [
             'tasks' => $tasks,
@@ -89,10 +91,21 @@ class TaskController extends AbstractController
     }
     
     #[Route('/task/{id}/delete', name: 'task.delete', methods: ['POST'])]
-    public function delete(Task $task, EntityManagerInterface $em): Response
-    {
-        $em->remove($task);
-        $em->flush();
+    public function delete(Task $task, DeleteService $deleteService): Response
+    {        
+        // Si l'utilisateur est admin, on effectue une suppression hard
+        if ($this->isGranted('ROLE_ADMIN')) {
+            $deleteService->hardDelete($task);
+            $this->addFlash('success', 'Tâche supprimée définitivement.');
+        } 
+        // Sinon, on effectue une soft delete
+        else {
+            if ($task->isDeleted()) {
+                throw new AccessDeniedException('Vous ne pouvez pas supprimer une tâche déjà supprimée.');
+            }
+            $deleteService->softDelete($task);
+            $this->addFlash('success', 'Tâche supprimée temporairement.');
+        }
 
         return $this->redirectToRoute('task.index');
     }

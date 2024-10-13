@@ -12,7 +12,7 @@ use App\Validator\MaxEstimates;
 #[ORM\Entity(repositoryClass: TaskRepository::class)]
 #[UniqueEntity(fields: ['slug'], message: 'Ce slug est déjà utilisé.')]
 #[MaxEstimates()]
-class Task
+class Task implements DeletableEntityInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -45,6 +45,9 @@ class Task
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $dueDate = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $deletedAt = null;
 
     public function getId(): ?int
     {
@@ -140,5 +143,22 @@ class Task
         $this->dueDate = $dueDate;
 
         return $this;
+    }
+
+    public function getDeletedAt(): ?\DateTimeImmutable
+    {
+        return $this->deletedAt;
+    }
+
+    public function setDeletedAt(?\DateTimeImmutable $deletedAt): static
+    {
+        $this->deletedAt = $deletedAt;
+
+        return $this;
+    }
+
+    public function isDeleted(): bool
+    {
+        return null !== $this->deletedAt;
     }
 }
