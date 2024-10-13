@@ -16,7 +16,7 @@
     <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
       Supprimer
     </button>
-  {% else if is_granted('ROLE_ADMIN') %}
+  {% elseif is_granted('ROLE_ADMIN') %}
     <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
       Supprimer définitivement
     </button>
