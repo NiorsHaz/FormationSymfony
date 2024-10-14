@@ -20,8 +20,26 @@ class ProjectRepository extends ServiceEntityRepository
     * @return ProjectWithTaskCountDTO[] Returns an array of Project objects
     */
     public function findAllWithTaskCount() : array {
+        dump(
+            $this->getEntityManager()->createQuery(<<<DQL
+                SELECT NEW App\DTO\ProjectWithTaskCountDTO(p.id, p.name, COUNT(t.id))
+                FROM APP\ENTITY\PROJECT p
+                LEFT JOIN p.tasks t
+                GROUP BY p.id
+            DQL)->getResult()
+        );
+
+        dump(
+            $this->createQueryBuilder('p')
+                ->select('NEW App\DTO\ProjectWithTaskCountDTO(p.id, p.name, COUNT(t.id))')
+                ->leftJoin('p.tasks', 't')
+                ->groupBy('p.id')
+                ->getQuery()
+                ->getResult()
+        );
+        
         return $this->createQueryBuilder('p')
-            ->select('NEW App\DTO\ProjectWithTaskCountDTO(p.id, p.name, COUNT(t.id))')
+            ->select('p as project', 'COUNT(t.id) as taskCount')
             ->leftJoin('p.tasks', 't')
             ->groupBy('p.id')
             ->getQuery()
