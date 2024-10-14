@@ -4,7 +4,10 @@ namespace App\Repository;
 
 use App\Entity\Project;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @extends ServiceEntityRepository<Project>
@@ -44,6 +47,25 @@ class ProjectRepository extends ServiceEntityRepository
             ->groupBy('p.id')
             ->getQuery()
             ->getResult();
+    }
+
+    public function getQueryBuilderFindAllWithTaskCount() : QueryBuilder {
+        return (
+            $this->createQueryBuilder('p')
+                ->select('NEW App\DTO\ProjectWithTaskCountDTO(p.id, p.name, COUNT(t.id))')
+                ->leftJoin('p.tasks', 't')
+                ->groupBy('p.id')
+        );
+    }
+
+    public function paginateProjects(int $page, int $limit) : Paginator {
+        return new Paginator($this
+            ->getQueryBuilderFindAllWithTaskCount()
+            ->setFirstResult(($page - 1) * $limit)
+            ->setMaxResults($limit)
+            ->getQuery(),
+            false
+        );
     }
 
 //    /**
