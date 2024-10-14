@@ -49,6 +49,10 @@ class Task implements DeletableEntityInterface
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $deletedAt = null;
 
+    #[ORM\ManyToOne(inversedBy: 'tasks')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Project $project = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -160,5 +164,17 @@ class Task implements DeletableEntityInterface
     public function isDeleted(): bool
     {
         return null !== $this->deletedAt;
+    }
+
+    public function getProject(): ?Project
+    {
+        return $this->project;
+    }
+
+    public function setProject(?Project $project): static
+    {
+        $this->project = $project;
+
+        return $this;
     }
 }
