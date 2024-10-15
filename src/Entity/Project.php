@@ -65,10 +65,10 @@ class Project
     /**
      * @return Collection<int, Task>
      */
-    public function getTasks(): Collection
-    {
-        return $this->tasks;
-    }
+    // public function getTasks(): Collection
+    // {
+    //     return $this->tasks;
+    // }
 
     public function addTask(Task $task): static
     {
