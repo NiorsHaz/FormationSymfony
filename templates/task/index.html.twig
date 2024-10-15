@@ -39,5 +39,17 @@
             <a class="list-group-item list-group-item-action" href="{{ url('task.show', {id: task.id, slug: task.slug}) }}">{{task.title}} (Estimation : {{task.estimates}})</a>
         {% endfor %}
     </ul>
+
+    {# <div class="d-flex">
+        {% if page > 1 %}
+            <a href="{{path('task.index', {page: page - 1}) }}" class="btn btn-secondary">Page précedent</a>
+        {% endif %}
+          {% if page < maxPage %}
+            <a href="{{path('task.index', {page: page + 1}) }}" class="btn btn-secondary">Page suivante</a>
+        {% endif %}
+    </div> #}
+
+    {{ knp_pagination_render(tasks) }}
+
 </div>
 {% endblock %}

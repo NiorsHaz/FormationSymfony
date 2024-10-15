@@ -35,7 +35,6 @@ class TaskController extends AbstractController
             'minEstimate' => $minEstimate,
             'maxEstimate' => $maxEstimate,
         ]);
-
     }
 
     #[Route('/tasks/{slug}-{id}', name: 'task.show', requirements: ['id' => '\d+', 'slug' => '[a-z0-9-]+'])]
@@ -43,10 +42,10 @@ class TaskController extends AbstractController
     {
         $task = $repository->find($id);
 
-        if($task->getSlug() !== $slug) {
+        if ($task->getSlug() !== $slug) {
             return $this->redirectToRoute('task.show', ['slug' => $task->getSlug(), 'id' => $task->getId()]);
         }
-        
+
         return $this->render('task/show.html.twig', [
             'task' => $task,
         ]);
@@ -89,15 +88,15 @@ class TaskController extends AbstractController
             'form' => $form,
         ]);
     }
-    
+
     #[Route('/task/{id}/delete', name: 'task.delete', methods: ['POST'])]
     public function delete(Task $task, DeleteService $deleteService): Response
-    {        
+    {
         // Si l'utilisateur est admin, on effectue une suppression hard
         if ($this->isGranted('ROLE_ADMIN')) {
             $deleteService->hardDelete($task);
             $this->addFlash('success', 'Tâche supprimée définitivement.');
-        } 
+        }
         // Sinon, on effectue une soft delete
         else {
             if ($task->isDeleted()) {
@@ -108,5 +107,29 @@ class TaskController extends AbstractController
         }
 
         return $this->redirectToRoute('task.index');
+    }
+
+    #[Route('/tasks/paginate', name: 'task.paginate')]
+    public function paginate(Request $request, TaskRepository $repository): Response
+    {
+
+        // Pagination
+        $page = $request->query->getInt('page', 1);
+        $limit = 2;
+
+        // Paginator
+        // $tasks =  $repository->paginateWithPaginatorTask($page, $limit);
+        // $maxPage = ceil($tasks->count() / $limit);
+
+
+        // KnpPaginatorBundle
+        $tasks =  $repository->paginateTask($page, $limit);
+
+
+        return $this->render('task/paginate.html.twig', [
+            'tasks' => $tasks,
+            //  'maxPage' => $maxPage,
+            'page' => $page
+        ]);
     }
 }
