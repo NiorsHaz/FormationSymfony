@@ -4,6 +4,7 @@ namespace App\Controller\API;
 
 use App\Entity\Project;
 use App\Repository\ProjectRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
@@ -19,7 +20,7 @@ class ProjectApiController extends AbstractController
     {
         $projects = $repository->findAll();
         return $this->json($projects, 200, [], [
-            'groups' => ['projects.index']
+            'groups' => ['projects.show']
         ]);
     }
 
@@ -27,19 +28,32 @@ class ProjectApiController extends AbstractController
     public function findById(Project $project)
     {
         return $this->json($project, 200, [], [
-            'groups' => ['projects.index', "projects.desc", "projects.task", "tasks.title"]
+            'groups' => ['projects.show', 'projects.desc', "projects.task", "tasks.title"]
         ]);
     }
 
 
     // Creation avec groups (choisir les champs que l'utilisateur peut remplir)
+    // #[Route("/api/projects", methods: "POST")]
+    // public function create(Request $request, SerializerInterface $serializer)
+    // {
+    //     $project = new Project();
+    //     dd($serializer->deserialize($request->getContent(), Project::class, 'json', [
+    //         AbstractNormalizer::OBJECT_TO_POPULATE => $project,
+    //         'groups' => ['projects.create']
+    //     ]));
+    // }
+
+    // Création avec groups ,serialization et validator (MapRequestPayload)
     #[Route("/api/projects", methods: "POST")]
-    public function create(Request $request, SerializerInterface $serializer)
+    public function create(#[MapRequestPayload(serializationContext: [
+        'groups' => ['projects.create']
+    ])] Project $project, EntityManagerInterface $em)
     {
-        $project = new Project();
-        dd($serializer->deserialize($request->getContent(), Project::class, 'json', [
-            AbstractNormalizer::OBJECT_TO_POPULATE => $project,
-            'groups' => ['projects.create']
-        ]));
+        $em->persist($project);
+        $em->flush();
+        return $this->json($project, 200, [], [
+            'groups' => ['projects.show']
+        ]);
     }
 }
