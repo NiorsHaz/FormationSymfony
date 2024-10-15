@@ -19,11 +19,11 @@ class Project
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups('projects.index')]
+    #[Groups(['projects.index', 'projects.create'])]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups('projects.desc')]
+    #[Groups(['projects.desc', 'projects.create'])]
     private ?string $description = null;
 
     /**
