@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ProjectRepository::class)]
-class Project
+class Project implements DeletableEntityInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -32,6 +32,9 @@ class Project
     #[ORM\OneToMany(targetEntity: Task::class, mappedBy: 'project')]
     #[Groups('projects.task')]
     private Collection $tasks;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $deletedAt = null;
 
     public function __construct()
     {
@@ -95,5 +98,22 @@ class Project
         }
 
         return $this;
+    }
+
+    public function getDeletedAt(): ?\DateTimeImmutable
+    {
+        return $this->deletedAt;
+    }
+
+    public function setDeletedAt(?\DateTimeImmutable $deletedAt): static
+    {
+        $this->deletedAt = $deletedAt;
+
+        return $this;
+    }
+
+    public function isDeleted(): bool
+    {
+        return null !== $this->deletedAt;
     }
 }
