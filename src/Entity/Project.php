@@ -23,13 +23,14 @@ class Project
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups('projects.description')]
+    #[Groups('projects.desc')]
     private ?string $description = null;
 
     /**
      * @var Collection<int, Task>
      */
     #[ORM\OneToMany(targetEntity: Task::class, mappedBy: 'project')]
+    #[Groups('projects.task')]
     private Collection $tasks;
 
     public function __construct()

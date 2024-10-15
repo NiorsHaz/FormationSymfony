@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Validator\MaxEstimates;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: TaskRepository::class)]
 #[UniqueEntity(fields: ['slug'], message: 'Ce slug est déjà utilisé.')]
@@ -22,6 +23,7 @@ class Task implements DeletableEntityInterface
     #[ORM\Column(length: 255)]
     #[Assert\Length(min: 10, minMessage: 'Minimum 10 caractères')]
     #[BanWord()]
+    #[Groups('projects.title')]
     private ?string $title = null;
 
     #[ORM\Column(length: 255)]
