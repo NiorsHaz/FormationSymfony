@@ -23,7 +23,7 @@ class ProjectApiController extends AbstractController
     public function findById(Project $project)
     {
         return $this->json($project, 200, [], [
-            'groups' => ['projects.index', "projects.desc", "projects.task", "projects.title"]
+            'groups' => ['projects.index', "projects.desc", "projects.task", "tasks.title"]
         ]);
     }
 }

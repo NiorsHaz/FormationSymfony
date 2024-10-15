@@ -18,12 +18,13 @@ class Task implements DeletableEntityInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups('tasks.index')]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\Length(min: 10, minMessage: 'Minimum 10 caractères')]
     #[BanWord()]
-    #[Groups('projects.title')]
+    #[Groups('tasks.title')]
     private ?string $title = null;
 
     #[ORM\Column(length: 255)]

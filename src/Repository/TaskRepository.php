@@ -84,7 +84,7 @@ class TaskRepository extends ServiceEntityRepository
     // Use KnpPaginatorBundle
     public function paginateTask(int $page = 1, int $limit = 2): PaginationInterface
     {
-        $sql = $this->createQueryBuilder('t');
+        $sql = $this->createQueryBuilder('t')->leftJoin('t.project', 'p')->select('t', 'p');
         return $this->paginator->paginate($sql, $page, $limit, ['distinct' => true, 'sortFieldAllowList' => ['t.id']]);
     }
 
