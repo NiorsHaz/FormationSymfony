@@ -10,5 +10,14 @@
             <a class="list-group-item list-group-item-action" >{{project.title}} (Tache : {{project.taskCount}})</a>
         {% endfor %}
     </ul>
+
+    <div class="d-flex">
+        {% if page > 1 %}
+            <a href="{{path('project.index', {page: page - 1}) }}" class="btn btn-secondary">Page precedent</a>
+        {% endif %}
+          {% if page < maxPage %}
+            <a href="{{path('project.index', {page: page + 1}) }}" class="btn btn-secondary">Page suivante</a>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}
