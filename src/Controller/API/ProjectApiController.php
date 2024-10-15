@@ -12,6 +12,8 @@ class ProjectApiController extends AbstractController
     public function index(ProjectRepository $repository)
     {
         $projects = $repository->findAll();
-        return $this->json($projects);
+        return $this->json($projects, 200, [], [
+            'groups' => ['projects.index']
+        ]);
     }
 }
