@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
@@ -24,7 +25,7 @@ class ProjectApiController extends AbstractController
         ]);
     }
 
-    #[Route("/api/projects/{id}", requirements: ['id' => Requirement::DIGITS])]
+    #[Route("/api/projects/{id}", methods: "GET", requirements: ['id' => Requirement::DIGITS])]
     public function findById(Project $project)
     {
         return $this->json($project, 200, [], [
@@ -53,6 +54,35 @@ class ProjectApiController extends AbstractController
         $em->persist($project);
         $em->flush();
         return $this->json($project, 200, [], [
+            'groups' => ['projects.show']
+        ]);
+    }
+
+    #[Route("/api/projects/{id}", methods: "PUT")]
+    public function update(
+        int $id,
+        Request $request,
+        ProjectRepository $repository,
+        EntityManagerInterface $em,
+        SerializerInterface $serializer,
+    ) {
+        // Récupérer le projet existant
+        $project = $repository->find($id);
+        if (!$project) {
+            throw new NotFoundHttpException('Projet non trouvé');
+        }
+
+        // Désérialisation partielle en indiquant que les propriétés existantes de $project doivent être conservées
+        $updatedProject = $serializer->deserialize(
+            $request->getContent(),
+            Project::class,
+            'json',
+            [AbstractNormalizer::OBJECT_TO_POPULATE => $project,  'groups' => ['projects.update']]
+        );
+
+        $em->persist($updatedProject);
+        $em->flush();
+        return $this->json($updatedProject, 200, [], [
             'groups' => ['projects.show']
         ]);
     }
