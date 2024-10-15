@@ -13,6 +13,7 @@ use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -67,6 +68,7 @@ class ProjectApiController extends AbstractController
     // *[UPDATE]*
 
     #[Route("/api/projects/{id}", methods: "PUT")]
+    #[IsGranted("ROLE_USER")]
     public function update(
         int $id,
         Request $request,
@@ -98,6 +100,7 @@ class ProjectApiController extends AbstractController
     // *[DELETE]*
 
     #[Route("/api/projects/{id}", methods: "DELETE")]
+    #[IsGranted("ROLE_USER")]
     public function delete(
         int $id,
         DeleteService $deleteService,

@@ -29,7 +29,7 @@ class UserApiController extends AbstractController
     }
 
     #[Route("/api/users/login", methods: "POST")]
-    public function login(Request $request, UserRepository $repository,  UserPasswordHasherInterface $userPasswordHasher,)
+    public function login(Request $request, UserRepository $repository,  UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $em)
     {
         $data = json_decode($request->getContent(), true);
         $email = $data['email'] ?? '';
@@ -41,6 +41,11 @@ class UserApiController extends AbstractController
         }
 
 
-        return new JsonResponse(['token' => 'token 123']);
+        // Generate token and update database
+        $user->setApiToken('test12345');
+        $em->persist($user);
+        $em->flush();
+
+        return new JsonResponse(['token' => $user->getApiToken()]);
     }
 }
