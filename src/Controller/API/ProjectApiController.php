@@ -35,9 +35,12 @@ class ProjectApiController extends AbstractController
 
     // Création avec groups ,serialization et validator (MapRequestPayload)
     #[Route("/api/projects", methods: "POST")]
-    public function create(#[MapRequestPayload(serializationContext: [
-        'groups' => ['projects.create']
-    ])] Project $project, EntityManagerInterface $em)
+    public function create(
+        #[MapRequestPayload(serializationContext: [
+            'groups' => ['projects.create']
+        ])] Project $project, 
+        EntityManagerInterface $em
+    )
     {
         $em->persist($project);
         $em->flush();
