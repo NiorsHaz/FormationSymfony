@@ -3,11 +3,13 @@
 namespace App\Form;
 
 use App\Entity\Task;
+use App\Enum\TaskStatus;
 use App\Service\FileUploadService;
 use DateTimeImmutable;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Event\PostSubmitEvent;
 use Symfony\Component\Form\Event\PreSubmitEvent;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -36,6 +38,12 @@ class TaskType extends AbstractType
             ])
             ->add('slug', TextType::class, [
                 'required' => false,
+            ])
+            ->add('status', ChoiceType::class, [
+                'choices' => TaskStatus::getChoices(),
+                'choice_label' => function($choice, $key, $value) {
+                    return $key; // Utilise la clé comme étiquette
+                }
             ])
             ->add('description')
             ->add('estimates', TextType::class, [

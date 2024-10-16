@@ -2,8 +2,11 @@
 
 namespace App\Entity;
 
+use App\Enum\TaskStatus;
 use App\Repository\TaskRepository;
 use App\Validator\BanWord;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -55,6 +58,20 @@ class Task implements DeletableEntityInterface
     #[ORM\ManyToOne(inversedBy: 'tasks')]
     #[ORM\JoinColumn(nullable: true)]
     private ?Project $project = null;
+
+    /**
+     * @var Collection<int, User>
+     */
+    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'tasks')]
+    private Collection $assignees;
+
+    #[ORM\Column(enumType: TaskStatus::class)]
+    private ?TaskStatus $status = null;
+
+    public function __construct()
+    {
+        $this->assignees = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -177,6 +194,42 @@ class Task implements DeletableEntityInterface
     public function setProject(?Project $project): static
     {
         $this->project = $project;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getAssignees(): Collection
+    {
+        return $this->assignees;
+    }
+
+    public function addAssignee(User $assignee): static
+    {
+        if (!$this->assignees->contains($assignee)) {
+            $this->assignees->add($assignee);
+        }
+
+        return $this;
+    }
+
+    public function removeAssignee(User $assignee): static
+    {
+        $this->assignees->removeElement($assignee);
+
+        return $this;
+    }
+
+    public function getStatus(): ?TaskStatus
+    {
+        return $this->status;
+    }
+
+    public function setStatus(TaskStatus $status): static
+    {
+        $this->status = $status;
 
         return $this;
     }
