@@ -16,7 +16,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: TaskRepository::class)]
 #[UniqueEntity(fields: ['slug'], message: 'Ce slug est déjà utilisé.')]
 #[MaxEstimates()]
-class Task implements DeletableEntityInterface
+class Task implements AbstractDeletableEntity
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -179,11 +179,6 @@ class Task implements DeletableEntityInterface
         $this->deletedAt = $deletedAt;
 
         return $this;
-    }
-
-    public function isDeleted(): bool
-    {
-        return null !== $this->deletedAt;
     }
 
     public function getProject(): ?Project
