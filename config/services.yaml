@@ -25,6 +25,14 @@ services:
     arguments:
       $secretKey: "%jwt_secret%"
 
+  App\EventListener\TokenListener:
+    tags:
+      - {
+          name: kernel.event_listener,
+          event: kernel.controller,
+          method: onKernelController,
+        }
+
   # add more service definitions when explicit configuration is needed
   # please note that last definitions always *replace* previous ones
   App\Service\FileUploadService:

@@ -2,6 +2,7 @@
 
 namespace App\Controller\API;
 
+use App\Annotation\TokenRequired;
 use App\Entity\Project;
 use App\Repository\ProjectRepository;
 use App\Service\DeleteService;
@@ -75,6 +76,7 @@ class ProjectApiController extends AbstractController
     }
 
     #[Route("/api/projects/{id}", methods: "GET", requirements: ['id' => Requirement::DIGITS])]
+    #[TokenRequired]
     public function findById(Project $project)
     {
         return $this->json($project, 200, [], [
