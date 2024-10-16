@@ -16,7 +16,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: TaskRepository::class)]
 #[UniqueEntity(fields: ['slug'], message: 'Ce slug est déjà utilisé.')]
 #[MaxEstimates()]
-class Task implements AbstractDeletableEntity
+class Task extends AbstractDeletableEntity
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
