@@ -6,7 +6,6 @@ use App\Annotation\TokenRequired;
 use App\Entity\Project;
 use App\Repository\ProjectRepository;
 use App\Service\DeleteService;
-use App\Service\JwtTokenManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,10 +28,9 @@ class ProjectApiController extends AbstractController
     public function create(
         #[MapRequestPayload(serializationContext: [
             'groups' => ['projects.create']
-        ])] Project $project, 
+        ])] Project $project,
         EntityManagerInterface $em
-    )
-    {
+    ) {
         $em->persist($project);
         $em->flush();
         return $this->json($project, 200, [], [

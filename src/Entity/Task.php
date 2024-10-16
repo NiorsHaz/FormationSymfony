@@ -21,35 +21,41 @@ class Task extends AbstractDeletableEntity
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups('tasks.index')]
+    #[Groups(['tasks.index', 'tasks.show'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\Length(min: 10, minMessage: 'Minimum 10 caractères')]
     #[BanWord()]
-    #[Groups('tasks.title')]
+    #[Groups(['tasks.title', 'tasks.show', 'tasks.create', 'tasks.update'])]
     private ?string $title = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\Length(min: 10, minMessage: 'Minimum 10 caractères')]
     #[Assert\Regex('/^[a-z0-9]+(?:(?:-|_)+[a-z0-9]+)*$/', message: 'Format invalide')]
+    #[Groups(['tasks.show', 'tasks.create'])]
     private ?string $slug = null;
 
     #[ORM\Column(length: 1000, nullable: true)]
+    #[Groups(['tasks.create', 'tasks.update'])]
     private ?string $description = null;
 
     #[ORM\Column(nullable: true)]
     #[Assert\NotBlank(message: "Valeur invalide")]
     #[Assert\Positive(message: "L'estimation doit être supérieure à 0.")]
+    #[Groups(['tasks.create', 'tasks.update'])]
     private ?int $estimates = null;
 
     #[ORM\Column]
+    #[Groups(['tasks.create'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column]
+    #[Groups(['tasks.create', 'tasks.update'])]
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['tasks.create', 'tasks.update'])]
     private ?\DateTimeImmutable $dueDate = null;
 
     #[ORM\Column(nullable: true)]
@@ -57,15 +63,18 @@ class Task extends AbstractDeletableEntity
 
     #[ORM\ManyToOne(inversedBy: 'tasks')]
     #[ORM\JoinColumn(nullable: true)]
+    #[Groups(['tasks.create', 'tasks.update'])]
     private ?Project $project = null;
 
     /**
      * @var Collection<int, User>
      */
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'tasks')]
+    #[Groups(['tasks.create', 'tasks.update'])]
     private Collection $assignees;
 
     #[ORM\Column(enumType: TaskStatus::class)]
+    #[Groups(['tasks.create', 'tasks.update'])]
     private ?TaskStatus $status = null;
 
     public function __construct()
