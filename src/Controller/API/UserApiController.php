@@ -40,9 +40,10 @@ class UserApiController extends AbstractController
             return new JsonResponse(['message' => 'Invalid credentials'], Response::HTTP_UNAUTHORIZED);
         }
 
+        // Générer un token sécurisé
+        $token = bin2hex(random_bytes(32)); // 32 octets génèrent un token de 64 caractères
 
-        // Generate token and update database
-        $user->setApiToken('test12345');
+        $user->setApiToken($token);
         $em->persist($user);
         $em->flush();
 
