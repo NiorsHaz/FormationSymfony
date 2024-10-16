@@ -4,6 +4,7 @@ namespace App\Controller\API;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
+use App\Service\JwtTokenManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -15,6 +16,13 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class UserApiController extends AbstractController
 {
+    private $jwtTokenManager;
+
+    public function __construct(JwtTokenManager $jwtTokenManager)
+    {
+        $this->jwtTokenManager = $jwtTokenManager;
+    }
+
     #[Route("/api/users", methods: "POST")]
     public function create(#[MapRequestPayload(serializationContext: [
         'groups' => ['users.create']
@@ -40,10 +48,14 @@ class UserApiController extends AbstractController
             return new JsonResponse(['message' => 'Invalid credentials'], Response::HTTP_UNAUTHORIZED);
         }
 
-        // Générer un token sécurisé
-        $token = bin2hex(random_bytes(32)); // 32 octets génèrent un token de 64 caractères
+        $claims = [
+            'userId' => $user->getId(),
+            'email' => $user->getEmail(),
+        ];
+        $token = $this->jwtTokenManager->createToken($claims, 3600);
 
-        $user->setApiToken($token);
+        // Generate token and update database
+        $user->setApiToken($token->toString());
         $em->persist($user);
         $em->flush();
 
