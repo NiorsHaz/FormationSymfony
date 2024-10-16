@@ -14,15 +14,20 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+class User extends AbstractDeletableEntity implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    public function __construct()
+    {
+        $this->tasks = new ArrayCollection();
+    }
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
-    #[Groups(['users.create', 'users.show'])]
+    #[Groups(['users.create', 'users.show', 'users.update'])]
     private ?string $email = null;
 
     /**
@@ -39,7 +44,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['users.create', 'users.show'])]
+    #[Groups(['users.create', 'users.show', 'users.update'])]
     private ?string $username = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -51,10 +56,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToMany(targetEntity: Task::class, mappedBy: 'assignees')]
     private Collection $tasks;
 
-    public function __construct()
-    {
-        $this->tasks = new ArrayCollection();
-    }
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $deletedAt = null;
 
     public function getId(): ?int
     {
@@ -168,7 +171,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             $this->tasks->add($task);
             $task->addAssignee($this);
         }
-
         return $this;
     }
 
@@ -177,6 +179,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         if ($this->tasks->removeElement($task)) {
             $task->removeAssignee($this);
         }
+
+        return $this;
+    }
+    
+    public function getDeletedAt(): ?\DateTimeImmutable
+    {
+        return $this->deletedAt;
+    }
+
+    public function setDeletedAt(?\DateTimeImmutable $deletedAt): static
+    {
+        $this->deletedAt = $deletedAt;
 
         return $this;
     }
