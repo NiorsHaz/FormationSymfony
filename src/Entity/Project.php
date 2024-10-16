@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ProjectRepository::class)]
-class Project implements DeletableEntityInterface
+class Project extends AbstractDeletableEntity
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -110,10 +110,5 @@ class Project implements DeletableEntityInterface
         $this->deletedAt = $deletedAt;
 
         return $this;
-    }
-
-    public function isDeleted(): bool
-    {
-        return null !== $this->deletedAt;
     }
 }
