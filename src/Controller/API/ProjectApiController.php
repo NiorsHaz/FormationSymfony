@@ -5,6 +5,7 @@ namespace App\Controller\API;
 use App\Entity\Project;
 use App\Repository\ProjectRepository;
 use App\Service\DeleteService;
+use App\Service\JwtTokenManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,6 +20,13 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 class ProjectApiController extends AbstractController
 {
+
+    private $jwtTokenManager;
+
+    public function __construct(JwtTokenManager $jwtTokenManager)
+    {
+        $this->jwtTokenManager = $jwtTokenManager;
+    }
 
     // *[CREATE]*
 
@@ -49,8 +57,17 @@ class ProjectApiController extends AbstractController
     // *[READ]*
 
     #[Route("/api/projects", methods: "GET")]
-    public function findAll(ProjectRepository $repository)
+    public function findAll(ProjectRepository $repository, Request $request)
     {
+        // Valider le token avant de créer le projet
+        $token = $this->jwtTokenManager->extractTokenFromRequest($request);
+        $parsedToken = $this->jwtTokenManager->parseToken($token);
+
+        if (!$parsedToken || !$this->jwtTokenManager->validateToken($parsedToken)) {
+            return $this->json(['error' => 'Invalid or expired token'], Response::HTTP_UNAUTHORIZED);
+        }
+
+
         $projects = $repository->findAll();
         return $this->json($projects, 200, [], [
             'groups' => ['projects.show']

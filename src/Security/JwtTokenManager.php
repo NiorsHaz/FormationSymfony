@@ -9,6 +9,7 @@ use Lcobucci\JWT\Token;
 use Lcobucci\JWT\Validation\Constraint\SignedWith;
 use Lcobucci\JWT\Validation\Constraint\ValidAt;
 use Lcobucci\Clock\SystemClock;
+use Symfony\Component\HttpFoundation\Request;
 
 class JwtTokenManager
 {
@@ -57,5 +58,15 @@ class JwtTokenManager
         } catch (\Throwable $e) {
             return null;
         }
+    }
+
+    // Method to extract token from the Authorization header
+    public function extractTokenFromRequest(Request $request): ?string
+    {
+        $authHeader = $request->headers->get('Authorization');
+        if ($authHeader && preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+            return $matches[1];
+        }
+        return null;
     }
 }
