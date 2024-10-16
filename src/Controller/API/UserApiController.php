@@ -50,7 +50,7 @@ class UserApiController extends AbstractController
 
         $claims = [
             'userId' => $user->getId(),
-            'email' => $user->getEmail(),
+            // 'email' => $user->getEmail(),
         ];
         $token = $this->jwtTokenManager->createToken($claims, 3600);
 
