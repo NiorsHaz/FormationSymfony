@@ -65,7 +65,7 @@ class Task implements DeletableEntityInterface
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'tasks')]
     private Collection $assignees;
 
-    #[ORM\Column(enumType: TaskStatus::class)]
+    #[ORM\Column(enumType: TaskStatus::class, nullable: true)]
     private ?TaskStatus $status = null;
 
     public function __construct()

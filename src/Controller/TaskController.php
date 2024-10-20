@@ -24,8 +24,11 @@ class TaskController extends AbstractController
         $minEstimate = $request->query->get('min_estimate', 0);
         $maxEstimate = $request->query->get('max_estimate', 10000); // Limite par défaut
 
+        $page = $request->query->getInt('page', 1);
+        $limit = 2;
+
         // Appeler la méthode du repository pour filtrer les tâches
-        $tasks = $repository->findByFilters($this->isGranted('ROLE_ADMIN'), $searchTitle, $minEstimate, $maxEstimate);
+        $tasks =  $repository->paginateTask($this->isGranted('ROLE_ADMIN'), $searchTitle, $minEstimate, $maxEstimate, $page, $limit);
         $totalEstimates = $repository->findTotalEstimates($this->isGranted('ROLE_ADMIN'), $searchTitle, $minEstimate, $maxEstimate);
 
         return $this->render('task/index.html.twig', [
@@ -109,27 +112,4 @@ class TaskController extends AbstractController
         return $this->redirectToRoute('task.index');
     }
 
-    #[Route('/tasks/paginate', name: 'task.paginate')]
-    public function paginate(Request $request, TaskRepository $repository): Response
-    {
-
-        // Pagination
-        $page = $request->query->getInt('page', 1);
-        $limit = 2;
-
-        // Paginator
-        // $tasks =  $repository->paginateWithPaginatorTask($page, $limit);
-        // $maxPage = ceil($tasks->count() / $limit);
-
-
-        // KnpPaginatorBundle
-        $tasks =  $repository->paginateTask($page, $limit);
-
-
-        return $this->render('task/paginate.html.twig', [
-            'tasks' => $tasks,
-            //  'maxPage' => $maxPage,
-            'page' => $page
-        ]);
-    }
 }

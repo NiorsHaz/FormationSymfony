@@ -82,10 +82,11 @@ class TaskRepository extends ServiceEntityRepository
     }
 
     // Use KnpPaginatorBundle
-    public function paginateTask(int $page = 1, int $limit = 2): PaginationInterface
+    public function paginateTask(bool $isAdmin, string $title = '', int $minEstimate = 0, int $maxEstimate = 10000, int $page = 1, int $limit = 2): PaginationInterface
     {
-        $sql = $this->createQueryBuilder('t')->leftJoin('t.project', 'p')->select('t', 'p');
-        return $this->paginator->paginate($sql, $page, $limit, ['distinct' => true, 'sortFieldAllowList' => ['t.id']]);
+        $qb = $this->createQueryBuilder('t')->leftJoin('t.project', 'p')->select('t', 'p');
+        $query = $this->createQueryWithFilters($qb, $isAdmin, $title, $minEstimate, $maxEstimate);
+        return $this->paginator->paginate($query, $page, $limit, ['distinct' => true, 'sortFieldAllowList' => ['t.id']]);
     }
 
     //    public function findOneBySomeField($value): ?Task
