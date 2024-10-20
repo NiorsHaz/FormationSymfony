@@ -64,11 +64,14 @@ class UserApiController extends AbstractController
 
     #[Route("/api/users", methods: "GET")]
     #[TokenRequired]
-    public function findAll(UserRepository $repository)
+    public function findAll(UserRepository $repository, Request $request)
     {
-        $users = $repository->findAll();
+        $search = $request->query->get('search', '');
+
+        $users = $repository->findActiveUsers($this->isGranted('ROLE_ADMIN'), $search);
+
         return $this->json($users, 200, [], [
-            'groups' => ['users.show']
+            'groups' => ['users.list']
         ]);
     }
 
@@ -109,13 +112,13 @@ class UserApiController extends AbstractController
         $em->persist($updatedProject);
         $em->flush();
         return $this->json($updatedProject, 200, [], [
-            'groups' => ['projects.show']
+            'groups' => ['users.show']
         ]);
     }
 
     // *[DELETE]*
 
-    #[Route("/api/projects/{id}", methods: "DELETE")]
+    #[Route("/api/users/{id}", methods: "DELETE")]
     #[TokenRequired]
     public function delete(
         int $id,

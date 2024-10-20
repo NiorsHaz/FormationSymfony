@@ -24,27 +24,29 @@ class User extends AbstractDeletableEntity implements UserInterface, PasswordAut
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['users.create', 'users.list', 'users.show'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
-    #[Groups(['users.create', 'users.show', 'users.update'])]
+    #[Groups(['users.create', 'users.list', 'users.show', 'users.update'])]
     private ?string $email = null;
 
     /**
      * @var list<string> The user roles
      */
     #[ORM\Column]
+    #[Groups(['users.create', 'users.list', 'users.show', 'users.update'])]
     private array $roles = [];
 
     /**
      * @var string The hashed password
      */
     #[ORM\Column]
-    #[Groups('users.create', 'tasks.list', 'tasks.show')]
+    #[Groups('users.create')]
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['users.create', 'users.show', 'users.update', 'tasks.list', 'tasks.show'])]
+    #[Groups(['users.create', 'users.list', 'users.show', 'users.update', 'tasks.list', 'tasks.show'])]
     private ?string $username = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -57,6 +59,7 @@ class User extends AbstractDeletableEntity implements UserInterface, PasswordAut
     private Collection $tasks;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['users.create', 'users.list', 'users.show', 'users.update', 'tasks.list', 'tasks.show'])]
     private ?\DateTimeImmutable $deletedAt = null;
 
     public function getId(): ?int

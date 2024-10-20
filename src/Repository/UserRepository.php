@@ -4,6 +4,8 @@ namespace App\Repository;
 
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -31,6 +33,29 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $user->setPassword($newHashedPassword);
         $this->getEntityManager()->persist($user);
         $this->getEntityManager()->flush();
+    }
+
+    public function findActiveUsers(bool $isAdmin, string $search = ''): array
+    {
+        $qb = $this->createQueryBuilder('u');
+
+        $query = $this->createQueryWithFilters($qb, $isAdmin, $search);
+        return $query->getResult();
+    }
+
+    private function createQueryWithFilters(QueryBuilder $qb, bool $isAdmin = false, string $search = ''): Query
+    {
+        if ($isAdmin) {
+            $qb->andWhere('t.deletedAt IS NULL');
+        }
+
+        // Rechercher par titre (si renseigné)
+        if ($search) {
+            $qb->andWhere('(u.username LIKE :search or u.email like :search)')
+                ->setParameter('title', '%' . $search . '%');
+        }
+
+        return $qb->getQuery();
     }
 
 //    /**
