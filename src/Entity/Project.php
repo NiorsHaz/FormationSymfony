@@ -15,7 +15,7 @@ class Project extends AbstractDeletableEntity
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups('projects.list', 'projects.show', 'tasks.list', 'tasks.create', 'tasks.udpate', 'tasks.show')]
+    #[Groups(['projects.list', 'projects.show', 'tasks.list', 'tasks.create', 'tasks.udpate', 'tasks.show'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
@@ -34,6 +34,7 @@ class Project extends AbstractDeletableEntity
     private Collection $tasks;
 
     #[ORM\Column(nullable: true)]
+    #[Groups('projects.list', 'projects.show')]
     private ?\DateTimeImmutable $deletedAt = null;
 
     public function __construct()
