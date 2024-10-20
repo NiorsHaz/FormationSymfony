@@ -45,6 +45,21 @@ class UserApiController extends AbstractController
         ]);
     }
 
+    #[Route("/api/users/default", methods: "POST")]
+    public function createDefault(UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $em)
+    {
+        $user = new User();
+        $user->setEmail('default@mail.com');
+        $user->setUsername('Default');
+        $user->setPassword($userPasswordHasher->hashPassword($user, "0000"));
+        $user->setRoles(['ROLE_ADMIN', 'ROLE_USER']);
+        $em->persist($user);
+        $em->flush();
+        return $this->json($user, 200, [], [
+            'groups' => ['users.show']
+        ]);
+    }
+
     // *[READ]*
 
     #[Route("/api/users", methods: "GET")]
