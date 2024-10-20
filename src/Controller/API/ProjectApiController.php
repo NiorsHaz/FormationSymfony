@@ -48,10 +48,10 @@ class ProjectApiController extends AbstractController
 
         $page = $request->query->getInt('page', 1);
         $limit = $request->query->getInt('limit', 100);
-        
+
         $projects = $repository->paginateProjects($this->isGranted('ROLE_ADMIN'), $searchTitle, $page, $limit);
         return $this->json($projects, 200, [], [
-            'groups' => ['projects.show']
+            'groups' => ['projects.list']
         ]);
     }
 
@@ -60,7 +60,7 @@ class ProjectApiController extends AbstractController
     public function findById(Project $project)
     {
         return $this->json($project, 200, [], [
-            'groups' => ['projects.show', 'projects.desc', "projects.task", "tasks.title"]
+            'groups' => ['projects.show']
         ]);
     }
 

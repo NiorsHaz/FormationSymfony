@@ -21,41 +21,41 @@ class Task extends AbstractDeletableEntity
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['tasks.index', 'tasks.show'])]
+    #[Groups(['tasks.list', 'tasks.show', 'projects.show'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\Length(min: 10, minMessage: 'Minimum 10 caractères')]
     #[BanWord()]
-    #[Groups(['tasks.title', 'tasks.show', 'tasks.create', 'tasks.update'])]
+    #[Groups(['tasks.list', 'tasks.show', 'tasks.create', 'tasks.update', 'projects.show'])]
     private ?string $title = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\Length(min: 10, minMessage: 'Minimum 10 caractères')]
     #[Assert\Regex('/^[a-z0-9]+(?:(?:-|_)+[a-z0-9]+)*$/', message: 'Format invalide')]
-    #[Groups(['tasks.show', 'tasks.create'])]
+    #[Groups(['tasks.list', 'tasks.show', 'tasks.update'])]
     private ?string $slug = null;
 
     #[ORM\Column(length: 1000, nullable: true)]
-    #[Groups(['tasks.create', 'tasks.update'])]
+    #[Groups(['tasks.create', 'tasks.update', 'tasks.show'])]
     private ?string $description = null;
 
     #[ORM\Column(nullable: true)]
     #[Assert\NotBlank(message: "Valeur invalide")]
     #[Assert\Positive(message: "L'estimation doit être supérieure à 0.")]
-    #[Groups(['tasks.create', 'tasks.update'])]
+    #[Groups(['tasks.list', 'tasks.create', 'tasks.update', 'tasks.show'])]
     private ?int $estimates = null;
 
     #[ORM\Column]
-    #[Groups(['tasks.create'])]
+    #[Groups(['tasks.show'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column]
-    #[Groups(['tasks.create', 'tasks.update'])]
+    #[Groups(['tasks.show'])]
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['tasks.create', 'tasks.update'])]
+    #[Groups(['tasks.list', 'tasks.create', 'tasks.show', 'tasks.update'])]
     private ?\DateTimeImmutable $dueDate = null;
 
     #[ORM\Column(nullable: true)]
@@ -63,17 +63,17 @@ class Task extends AbstractDeletableEntity
 
     #[ORM\ManyToOne(inversedBy: 'tasks')]
     #[ORM\JoinColumn(nullable: true)]
-    #[Groups(['tasks.create', 'tasks.update'])]
+    #[Groups(['tasks.list', 'tasks.create', 'tasks.show', 'tasks.update'])]
     private ?Project $project = null;
 
     /**
      * @var Collection<int, User>
      */
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'tasks')]
-    #[Groups(['tasks.create', 'tasks.update'])]
+    #[Groups(['tasks.list', 'tasks.show'])]
     private Collection $assignees;
 
-    #[Groups(['tasks.create', 'tasks.update'])]
+    #[Groups(['tasks.list', 'tasks.show'])]
     #[ORM\Column(enumType: TaskStatus::class, nullable: true)]
     private ?TaskStatus $status = null;
 

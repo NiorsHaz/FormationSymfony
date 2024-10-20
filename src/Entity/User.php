@@ -40,11 +40,11 @@ class User extends AbstractDeletableEntity implements UserInterface, PasswordAut
      * @var string The hashed password
      */
     #[ORM\Column]
-    #[Groups('users.create')]
+    #[Groups('users.create', 'tasks.list', 'tasks.show')]
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['users.create', 'users.show', 'users.update'])]
+    #[Groups(['users.create', 'users.show', 'users.update', 'tasks.list', 'tasks.show'])]
     private ?string $username = null;
 
     #[ORM\Column(length: 255, nullable: true)]

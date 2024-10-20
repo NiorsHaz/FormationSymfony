@@ -15,22 +15,22 @@ class Project extends AbstractDeletableEntity
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups('projects.show')]
+    #[Groups('projects.list', 'projects.show', 'tasks.list', 'tasks.create', 'tasks.udpate', 'tasks.show')]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['projects.show', 'projects.create', 'projects.update'])]
+    #[Groups(['projects.list', 'projects.show', 'projects.create', 'projects.update', 'tasks.list', 'tasks.show'])]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups(['projects.desc', 'projects.create', 'projects.update'])]
+    #[Groups(['projects.show', 'projects.create', 'projects.update'])]
     private ?string $description = null;
 
     /**
      * @var Collection<int, Task>
      */
     #[ORM\OneToMany(targetEntity: Task::class, mappedBy: 'project')]
-    #[Groups('projects.task')]
+    #[Groups('projects.show')]
     private Collection $tasks;
 
     #[ORM\Column(nullable: true)]
