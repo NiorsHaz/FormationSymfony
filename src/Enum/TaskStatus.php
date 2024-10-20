@@ -16,4 +16,13 @@ enum TaskStatus: string
             'Completed' => self::COMPLETED->value,
         ];
     }
+
+    public static function getValidStatuses(): array
+    {
+        return [
+            self::PENDING->value,
+            self::IN_PROGRESS->value,
+            self::COMPLETED->value,
+        ];
+    }
 }

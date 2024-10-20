@@ -59,6 +59,7 @@ class Task extends AbstractDeletableEntity
     private ?\DateTimeImmutable $dueDate = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['tasks.list', 'tasks.show'])]
     private ?\DateTimeImmutable $deletedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'tasks')]

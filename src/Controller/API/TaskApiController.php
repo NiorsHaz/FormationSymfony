@@ -5,6 +5,7 @@ namespace App\Controller\API;
 use App\Annotation\TokenRequired;
 use App\Entity\Project;
 use App\Entity\Task;
+use App\Enum\TaskStatus;
 use App\Repository\ProjectRepository;
 use App\Repository\TaskRepository;
 use App\Repository\UserRepository;
@@ -81,6 +82,16 @@ class TaskApiController extends AbstractController
                 $task->addAssignee($assignee); 
             }
         }
+
+        $status = $data['status'] ?? null;
+        if ($status) {
+            $validStatuses = TaskStatus::getValidStatuses(); 
+            if (in_array($status, $validStatuses)) {
+                $taskStatus = TaskStatus::from($status);
+                $task->setStatus($taskStatus);
+            } 
+        }
+
     }
 
     // *[READ]*
