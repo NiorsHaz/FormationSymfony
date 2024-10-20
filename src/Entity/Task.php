@@ -73,8 +73,8 @@ class Task extends AbstractDeletableEntity
     #[Groups(['tasks.create', 'tasks.update'])]
     private Collection $assignees;
 
-    #[ORM\Column(enumType: TaskStatus::class)]
     #[Groups(['tasks.create', 'tasks.update'])]
+    #[ORM\Column(enumType: TaskStatus::class, nullable: true)]
     private ?TaskStatus $status = null;
 
     public function __construct()

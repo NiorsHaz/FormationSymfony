@@ -44,7 +44,18 @@ class TaskApiController extends AbstractController
     #[TokenRequired]
     public function findAll(TaskRepository $repository, Request $request)
     {
-        $tasks = $repository->findAll();
+        // Récupérer les valeurs de recherche et de filtre min/max
+        $searchTitle = $request->query->get('search', '');
+        $minEstimate = $request->query->get('min_estimate', 0);
+        $maxEstimate = $request->query->get('max_estimate', 10000); // Limite par défaut
+
+        $page = $request->query->getInt('page', 1);
+        $limit = 2;
+
+        // Appeler la méthode du repository pour filtrer les tâches
+        $tasks =  $repository->paginateTask($this->isGranted('ROLE_ADMIN'), $searchTitle, $minEstimate, $maxEstimate, $page, $limit);
+
+        // $tasks = $repository->findAll();
         return $this->json($tasks, 200, [], [
             'groups' => ['tasks.show']
         ]);
