@@ -4,17 +4,19 @@ namespace App\Repository;
 
 use App\Entity\Project;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Component\HttpFoundation\Request;
+use Knp\Component\Pager\Pagination\PaginationInterface;
+use Knp\Component\Pager\PaginatorInterface;
 
 /**
  * @extends ServiceEntityRepository<Project>
  */
 class ProjectRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, private PaginatorInterface $paginator)
     {
         parent::__construct($registry, Project::class);
     }
@@ -58,7 +60,7 @@ class ProjectRepository extends ServiceEntityRepository
         );
     }
 
-    public function paginateProjects(int $page, int $limit) : Paginator {
+    public function paginateProjectsWithPaginator(int $page, int $limit) : Paginator {
         return new Paginator($this
             ->getQueryBuilderFindAllWithTaskCount()
             ->setFirstResult(($page - 1) * $limit)
@@ -66,6 +68,28 @@ class ProjectRepository extends ServiceEntityRepository
             ->getQuery(),
             false
         );
+    }
+
+    private function createQueryWithFilters(QueryBuilder $qb, bool $isAdmin = false, string $title = ''): Query
+    {
+        if ($isAdmin) {
+            $qb->andWhere('t.deletedAt IS NULL');
+        }
+
+        // Rechercher par titre (si renseigné)
+        if ($title) {
+            $qb->andWhere('t.title LIKE :title')
+                ->setParameter('title', '%' . $title . '%');
+        }
+        return $qb->getQuery();
+    }
+
+    // Use KnpPaginatorBundle
+    public function paginateProjects(bool $isAdmin, string $title = '', int $page = 1, int $limit = 2): PaginationInterface
+    {
+        $qb = $this->createQueryBuilder('p');
+        $query = $this->createQueryWithFilters($qb, $isAdmin, $title);
+        return $this->paginator->paginate($query, $page, $limit, ['distinct' => true, 'sortFieldAllowList' => ['p.id']]);
     }
 
 //    /**

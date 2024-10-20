@@ -44,7 +44,12 @@ class ProjectApiController extends AbstractController
     #[TokenRequired]
     public function findAll(ProjectRepository $repository, Request $request)
     {
-        $projects = $repository->findAll();
+        $searchTitle = $request->query->get('search', '');
+
+        $page = $request->query->getInt('page', 1);
+        $limit = $request->query->getInt('limit', 100);
+        
+        $projects = $repository->paginateProjects($this->isGranted('ROLE_ADMIN'), $searchTitle, $page, $limit);
         return $this->json($projects, 200, [], [
             'groups' => ['projects.show']
         ]);

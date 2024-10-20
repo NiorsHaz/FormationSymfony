@@ -137,6 +137,7 @@ class UserApiController extends AbstractController
             // 'email' => $user->getEmail(),
         ];
         $token = $this->jwtTokenManager->createToken($claims, 3600);
+        // $token = bin2hex(random_bytes(32)); // 32 octets génèrent un token de 64 caractères
 
         // Generate token and update database
         $user->setApiToken($token->toString());

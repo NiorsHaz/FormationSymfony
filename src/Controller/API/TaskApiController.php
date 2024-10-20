@@ -50,7 +50,7 @@ class TaskApiController extends AbstractController
         $maxEstimate = $request->query->get('max_estimate', 10000); // Limite par défaut
 
         $page = $request->query->getInt('page', 1);
-        $limit = 2;
+        $limit = $request->query->getInt('limit', 100);
 
         // Appeler la méthode du repository pour filtrer les tâches
         $tasks =  $repository->paginateTask($this->isGranted('ROLE_ADMIN'), $searchTitle, $minEstimate, $maxEstimate, $page, $limit);
@@ -123,14 +123,4 @@ class TaskApiController extends AbstractController
         // Return no content code
         return new Response(null, 204);
     }
-
-    // #[Route("/api/tasks/paginate")]
-    // public function findPaginateTask(TaskRepository $repository, Request $request)
-    // {
-    //     $page = $request->query->getInt('page', 1);
-    //     $tasks = $repository->paginateTask($page);
-    //     return $this->json($tasks, 200, [], [
-    //         'groups' => ['tasks.index',  "tasks.title"]
-    //     ]);
-    // }
 }

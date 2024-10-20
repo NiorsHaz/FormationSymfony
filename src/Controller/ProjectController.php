@@ -15,7 +15,7 @@ class ProjectController extends AbstractController
     {
         $page = $request->query->getInt('page', 1);
         $limit = 1;
-        $projects = $repository->paginateProjects($page, $limit);
+        $projects = $repository->paginateProjectsWithPaginator($page, $limit);
         $maxPage = ceil($projects->count() / $limit);
         return $this->render('project/index.html.twig', [
             'projects' => $projects,
