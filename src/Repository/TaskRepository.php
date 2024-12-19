@@ -21,16 +21,32 @@ class TaskRepository extends ServiceEntityRepository
         parent::__construct($registry, Task::class);
     }
 
-    public function findTotalEstimates(bool $isAdmin, string $title = '', int $minEstimate = 0, int $maxEstimate = 10000): int
+    public function restoreTask(int $taskId): void
+    {
+        $qb = $this->createQueryBuilder('t');
+
+        $qb->update('App\Entity\Task', 't')
+            ->set('t.deletedAt', ':null')
+            ->where('t.id = :id')
+            ->setParameter('null', null)
+            ->setParameter('id', $taskId)
+            ->getQuery()
+            ->execute();
+    }
+
+    public function findTotalEstimates(bool $isAdmin, bool $deleted,string $title = '', int $minEstimate = 0, int $maxEstimate = 10000, int $project_id): int
     {
         $qb = $this->createQueryBuilder('t')
             ->select('SUM(t.estimates)');
 
-        $query = $this->createQueryWithFilters($qb, $isAdmin, $title, $minEstimate, $maxEstimate);
+        $query = $this->createQueryWithFilters($qb, $isAdmin, $deleted, $title, $minEstimate, $maxEstimate, $project_id);
 
         $total = $query->getSingleScalarResult();
+        if($total != null){
+            return $total;
+        }
+        else return 0;
 
-        return $total;
     }
 
     /**
@@ -41,18 +57,25 @@ class TaskRepository extends ServiceEntityRepository
      * @param int $maxEstimate La valeur maximale pour estimates
      * @return Task[] Un tableau d'objets Task
      */
-    public function findByFilters(bool $isAdmin, string $title = '', int $minEstimate, int $maxEstimate): array
+    public function findByFilters(bool $isAdmin, string $title = '', int $minEstimate, int $maxEstimate, int $project_id, bool $deleted): array
     {
         $qb = $this->createQueryBuilder('t');
 
-        $query = $this->createQueryWithFilters($qb, $isAdmin, $title, $minEstimate, $maxEstimate);
+        $query = $this->createQueryWithFilters($qb, $isAdmin, $deleted ,$title, $minEstimate, $maxEstimate, $project_id);
 
         return $query->getResult();
     }
 
-    private function createQueryWithFilters(QueryBuilder $qb, bool $isAdmin = false, string $title = '', int $minEstimate = 0, int $maxEstimate = 10000): Query
+    private function createQueryWithFilters(QueryBuilder $qb, bool $isAdmin = false, bool $deleted = false, string $title = '', int $minEstimate = 0, int $maxEstimate = 10000, int $project_id = 0): Query
     {
         if ($isAdmin) {
+            $qb->andWhere('t.deletedAt IS NULL');
+        }
+
+        if ($deleted){
+            $qb->andWhere('t.deletedAt IS NOT NULL');
+        }
+        else{
             $qb->andWhere('t.deletedAt IS NULL');
         }
 
@@ -60,6 +83,10 @@ class TaskRepository extends ServiceEntityRepository
         if ($title) {
             $qb->andWhere('t.title LIKE :title')
                 ->setParameter('title', '%' . $title . '%');
+        }
+        if($project_id > 0){
+            $qb->andWhere('t.project = :project_id')
+                ->setParameter('project_id', $project_id);
         }
 
         // Filtrer par estimates (min/max)
@@ -82,10 +109,10 @@ class TaskRepository extends ServiceEntityRepository
     }
 
     // Use KnpPaginatorBundle
-    public function paginateTask(bool $isAdmin, string $title = '', int $minEstimate = 0, int $maxEstimate = 10000, int $page = 1, int $limit = 2): PaginationInterface
+    public function paginateTask(bool $isAdmin, bool $deleted,string $title = '', int $minEstimate = 0, int $maxEstimate = 10000, int $page = 1, int $limit = 2): PaginationInterface
     {
         $qb = $this->createQueryBuilder('t')->leftJoin('t.project', 'p')->select('t', 'p');
-        $query = $this->createQueryWithFilters($qb, $isAdmin, $title, $minEstimate, $maxEstimate);
+        $query = $this->createQueryWithFilters($qb, $isAdmin, $deleted, $title, $minEstimate, $maxEstimate);
         return $this->paginator->paginate($query, $page, $limit, ['distinct' => true, 'sortFieldAllowList' => ['t.id']]);
     }
 

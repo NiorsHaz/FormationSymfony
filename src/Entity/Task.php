@@ -78,6 +78,9 @@ class Task extends AbstractDeletableEntity
     #[ORM\Column(enumType: TaskStatus::class, nullable: true)]
     private ?TaskStatus $status = null;
 
+    #[ORM\ManyToOne(inversedBy: 'tasks')]
+    private ?Category $Category = null;
+
     public function __construct()
     {
         $this->assignees = new ArrayCollection();
@@ -235,6 +238,18 @@ class Task extends AbstractDeletableEntity
     public function setStatus(TaskStatus $status): static
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    public function getCategory(): ?Category
+    {
+        return $this->Category;
+    }
+
+    public function setCategory(?Category $Category): static
+    {
+        $this->Category = $Category;
 
         return $this;
     }
