@@ -5,7 +5,14 @@
 {% block body %}
 <div class="container">  
   <h1>{{ task.title }}</h1>
+  {% if task.project != null %}
+  <ul class="list-group">
+    <a class="list-group-item list-group-item-action" href="{{ url('project.show', {id: task.project.id, name: task.project.name}) }}">From project :  <strong>{{task.project.name}}</strong></a>
+  </ul>
+  {% endif %}
+
   <p>Description: {{ task.description }}</p>
+  <p>Category: {{ task.category.label }}</p>
   <p>Estimation : {{ task.estimates }} heures</p>
   <p>Date d'échéance : {{ task.dueDate ? task.dueDate|date('Y-m-d H:i:s') : 'Non définie' }}</p>
   <p>Date de création : {{ task.createdAt ? task.createdAt|date('Y-m-d H:i:s') : 'Non définie' }}</p>
@@ -21,7 +28,11 @@
       Supprimer définitivement
     </button>
   {% endif %}
-
+  
+  {% if task.deletedAt != null %}
+    <a href="{{ path('task.restore', {'id': task.id}) }}" class="btn btn-primary">Restore</a>
+  {% endif %}
+  
   {% include 'partials/modal.html.twig' %}
 </div>
 {% endblock %}

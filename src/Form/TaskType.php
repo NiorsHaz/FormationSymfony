@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Task;
 use App\Enum\TaskStatus;
+use App\Repository\CategoryRepository;
 use App\Service\FileUploadService;
 use DateTimeImmutable;
 use Symfony\Component\Form\AbstractType;
@@ -21,7 +22,7 @@ use Symfony\Component\String\Slugger\AsciiSlugger;
 
 class TaskType extends AbstractType
 {
-    public function __construct(private FileUploadService $uploadService)
+    public function __construct(private FileUploadService $uploadService, private CategoryRepository $categoryRepository)
     {
     }
 
@@ -30,6 +31,17 @@ class TaskType extends AbstractType
         $builder
             ->add('title', TextType::class, [
                 'label' => 'Titre'
+            ])
+            ->add('category', ChoiceType::class,[
+                'label' => 'Category',
+                'choices' => $this->categoryRepository->findAll(),
+                'choice_label' => function ($category) {
+                    return $category->getName();
+                },
+                'choice_value' => function ($category) {
+                    return $category ? $category->getId() : '';
+                },
+                'placeholder' => 'Choose a category',
             ])
             ->add('file', FileType::class, [
                 'mapped' => false,

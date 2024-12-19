@@ -18,6 +18,9 @@
                 <li class="nav-item">
                     <a class="nav-link {{ app.current_route starts with 'task' ? 'active' : '' }}" href="{{ url('task.index') }}">Taches</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ app.current_route starts with 'category' ? 'active' : '' }}" href="{{ url('category.create') }}">Add Category</a>
+                </li>
             </ul>
         </div>
     </div>

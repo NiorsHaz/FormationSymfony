@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Project;
 use App\Entity\Task;
 use App\Form\TaskType;
+use App\Form\AssignTaskType;
 use App\Repository\TaskRepository;
 use App\Service\DeleteService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -28,10 +30,33 @@ class TaskController extends AbstractController
         $limit = 2;
 
         // Appeler la méthode du repository pour filtrer les tâches
-        $tasks =  $repository->paginateTask($this->isGranted('ROLE_ADMIN'), $searchTitle, $minEstimate, $maxEstimate, $page, $limit);
-        $totalEstimates = $repository->findTotalEstimates($this->isGranted('ROLE_ADMIN'), $searchTitle, $minEstimate, $maxEstimate);
+        $tasks =  $repository->paginateTask($this->isGranted('ROLE_ADMIN'), false, $searchTitle, $minEstimate, $maxEstimate, $page, $limit);
+        $totalEstimates = $repository->findTotalEstimates($this->isGranted('ROLE_ADMIN'), false,$searchTitle, $minEstimate, $maxEstimate, 0);
 
         return $this->render('task/index.html.twig', [
+            'tasks' => $tasks,
+            'totalEstimates' => $totalEstimates,
+            'searchTitle' => $searchTitle,
+            'minEstimate' => $minEstimate,
+            'maxEstimate' => $maxEstimate,
+        ]);
+    }
+    #[Route('/tasks/trashbin', name: 'task.trashbin')]
+    public function trashbin(Request $request, TaskRepository $repository): Response
+    {
+        // Récupérer les valeurs de recherche et de filtre min/max
+        $searchTitle = $request->query->get('search', '');
+        $minEstimate = $request->query->get('min_estimate', 0);
+        $maxEstimate = $request->query->get('max_estimate', 10000); // Limite par défaut
+
+        $page = $request->query->getInt('page', 1);
+        $limit = 2;
+
+        // Appeler la méthode du repository pour filtrer les tâches
+        $tasks =  $repository->paginateTask($this->isGranted('ROLE_ADMIN'), true, $searchTitle, $minEstimate, $maxEstimate, $page, $limit);
+        $totalEstimates = $repository->findTotalEstimates($this->isGranted('ROLE_ADMIN'), true,$searchTitle, $minEstimate, $maxEstimate, 0);
+
+        return $this->render('task/deleted.html.twig', [
             'tasks' => $tasks,
             'totalEstimates' => $totalEstimates,
             'searchTitle' => $searchTitle,
@@ -52,6 +77,15 @@ class TaskController extends AbstractController
         return $this->render('task/show.html.twig', [
             'task' => $task,
         ]);
+    }
+
+    #[Route('/tasks/restore/{id}', name: 'task.restore', requirements: ['id' => '\d+'])]
+    public function restore(int $id, TaskRepository $repository): Response
+    {
+        $repository->restoreTask($id);
+
+        $this->addFlash('success', 'La tache a bien été restorée');
+        return $this->redirectToRoute('task.index');
     }
 
     #[Route('/tasks/{id}/edit', name: 'task.edit')]
@@ -110,6 +144,41 @@ class TaskController extends AbstractController
         }
 
         return $this->redirectToRoute('task.index');
+    }
+    
+    #[Route('/assign-tasks', name: 'assign_tasks')]
+    public function assignTasks(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $projects = $entityManager->getRepository(Project::class)->findAll();
+        $tasks = $entityManager->getRepository(Task::class)->findBy(['project' => null]); // Unassigned tasks
+
+        $form = $this->createForm(AssignTaskType::class, null, [
+            'projects' => $projects,
+            'tasks' => $tasks,
+        ]);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            $project = $data['project'];
+            $selectedTasks = $data['tasks'];
+
+            foreach ($selectedTasks as $task) {
+                $task->setProject($project);
+                $entityManager->persist($task);
+            }
+
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Tasks assigned successfully!');
+
+            return $this->redirectToRoute('project.index');
+        }
+
+        return $this->render('task/assign_tasks.html.twig', [
+            'form' => $form->createView(),
+        ]);
     }
 
 }

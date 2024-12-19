@@ -30,6 +30,7 @@ class ProjectRepository extends ServiceEntityRepository
                 SELECT NEW App\DTO\ProjectWithTaskCountDTO(p.id, p.name, COUNT(t.id))
                 FROM APP\ENTITY\PROJECT p
                 LEFT JOIN p.tasks t
+                WHERE t.delete_at IS NULL
                 GROUP BY p.id
             DQL)->getResult()
         );
@@ -38,6 +39,7 @@ class ProjectRepository extends ServiceEntityRepository
             $this->createQueryBuilder('p')
                 ->select('NEW App\DTO\ProjectWithTaskCountDTO(p.id, p.name, COUNT(t.id))')
                 ->leftJoin('p.tasks', 't')
+                ->andWhere('t.deleted_at IS NULL')
                 ->groupBy('p.id')
                 ->getQuery()
                 ->getResult()
@@ -46,6 +48,7 @@ class ProjectRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('p')
             ->select('p as project', 'COUNT(t.id) as taskCount')
             ->leftJoin('p.tasks', 't')
+            ->andWhere('t.deleted_at IS NULL')
             ->groupBy('p.id')
             ->getQuery()
             ->getResult();
@@ -55,7 +58,7 @@ class ProjectRepository extends ServiceEntityRepository
         return (
             $this->createQueryBuilder('p')
                 ->select('NEW App\DTO\ProjectWithTaskCountDTO(p.id, p.name, COUNT(t.id))')
-                ->leftJoin('p.tasks', 't')
+                ->leftJoin('p.tasks', 't', 'WITH', 't.deletedAt IS NULL')
                 ->groupBy('p.id')
         );
     }
